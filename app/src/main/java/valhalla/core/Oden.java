@@ -1,6 +1,7 @@
 package valhalla.core;
 
 import valhalla.graphics.Freja;
+
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -15,7 +16,6 @@ import javafx.stage.Stage;
 public class Oden extends Application {
     private AnimationTimer gameLoop;
     private Freja freja;
-    private Frigg frigg;
 
     public Oden() {
     }
@@ -23,17 +23,15 @@ public class Oden extends Application {
     public void initialize() {
         // Initiera spelets tillstånd här
         freja = new Freja();
-        frigg = new Frigg();
     }
 
-    public void run(String[] args) {
+    public static void run(Class<Oden> appClass, String[] args) {
         Balder.Log.info("Running Oden");
         launch(args);
     }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Balder.Log.info("Starting Oden");
         initialize();
         primaryStage.setTitle("Valhalla");
         primaryStage.setWidth(800);
@@ -43,7 +41,7 @@ public class Oden extends Application {
         primaryStage.setScene(new Scene(root));
 
         // Initiera Freja och rendera
-        freja.init(root, frigg);
+        freja.init(root);
 
         // Skapa gameloop
         gameLoop = new AnimationTimer() {

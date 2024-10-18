@@ -2,12 +2,14 @@ package valhalla.graphics;
 
 import valhalla.core.*;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
+
+import java.util.logging.Level;
+
 import javafx.scene.Scene;
 
 /**
@@ -19,7 +21,8 @@ public class Freja {
     StackPane root;
     public SpriteAnimation spriteAnimation; // Lägg till SpriteAnimation
 
-    public void init(StackPane root, Frigg frigg) {
+    public void init(StackPane root) {
+        Balder.setLevel(Level.INFO);
         Balder.Log.info("Initializing Freja");
         this.root = root;
         this.root.setBackground(new Background(new BackgroundFill(Color.PINK, null, null)));
@@ -27,7 +30,6 @@ public class Freja {
         // Ladda spritesheet
         Image spriteSheet = new Image(getClass().getResourceAsStream("/prtg_roll_spritesheet.png"));
         spriteAnimation = new SpriteAnimation(spriteSheet, 32, 32, 12); // Anta att varje ram är 64x64 och det finns 12
-                                                                        // ramar
 
         // Lägg till ImageView till root
         this.root.getChildren().add(spriteAnimation.getImageView());
@@ -35,13 +37,7 @@ public class Freja {
 
         // Registrera en tangenttryckningslyssnare
         Scene scene = root.getScene();
-        scene.setOnKeyPressed(event -> {
-            Frigg.handle(event); // Skicka input till Frigg
-        });
-
-        scene.setOnKeyReleased(event -> {
-            Frigg.handle(event); // Skicka input till Frigg
-        });
+        Frigg.handleSceneInput(scene);
 
         Balder.Log.info("Freja initialized");
     }

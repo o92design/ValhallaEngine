@@ -3,6 +3,7 @@ package valhalla.core;
 import java.util.HashMap;
 import java.util.Map;
 
+import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
@@ -25,7 +26,7 @@ public class Frigg {
         keys.put(key, isDown);
     }
 
-    public static void handle(KeyEvent event) {
+    public static void handleInput(KeyEvent event) {
         if (event.getEventType() == KeyEvent.KEY_PRESSED) {
             setKeyDown(event.getCode(), true);
         } else if (event.getEventType() == KeyEvent.KEY_RELEASED) {
@@ -33,14 +34,14 @@ public class Frigg {
         }
     }
 
-    public static void handle(MouseEvent event) {
+    public static void handleInput(MouseEvent event) {
         setMouseButton(event.getButton(), event.getEventType() == MouseEvent.MOUSE_PRESSED);
         if (event.getEventType() == MouseEvent.MOUSE_RELEASED) {
             setMouseButton(event.getButton(), false);
         }
     }
 
-    private static void setMouseButton(MouseButton button, boolean isDown) {
+    public static void setMouseButton(MouseButton button, boolean isDown) {
         mouseButtons.put(button, isDown);
     }
 
@@ -48,7 +49,22 @@ public class Frigg {
         return mouseButtons.getOrDefault(button, false);
     }
 
-    public void handleInput(KeyEvent event) {
-        handle(event);
+    public static void handleSceneInput(Scene scene) {
+        scene.setOnKeyPressed(event -> {
+            handleInput(event);
+        });
+
+        scene.setOnKeyReleased(event -> {
+            handleInput(event);
+        });
+
+        scene.setOnMousePressed(event -> {
+            handleInput(event);
+        });
+
+        scene.setOnMouseReleased(event -> {
+            handleInput(event);
+        });
     }
+
 }

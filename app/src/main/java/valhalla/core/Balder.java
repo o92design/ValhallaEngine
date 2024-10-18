@@ -2,6 +2,7 @@ package valhalla.core;
 
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 import java.util.logging.LogRecord;
@@ -32,7 +33,18 @@ public final class Balder {
                         record.getMessage());
             }
         });
+
         Log.addHandler(handler);
+        handler.setLevel(Level.ALL);
+        Log.setLevel(Level.ALL);
+    }
+
+    // TODO(18-10-24: KiOskars) - Fixa så att detta fungerar för de olika klasserna
+    public static void setLevel(Level level) {
+        for (Handler handler : Log.getHandlers()) {
+            handler.setLevel(level);
+        }
+        Log.setLevel(level);
     }
 
     public static Balder Instance;
