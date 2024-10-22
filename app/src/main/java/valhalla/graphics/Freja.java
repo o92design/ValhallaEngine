@@ -1,25 +1,24 @@
 package valhalla.graphics;
 
-import valhalla.core.*;
-import javafx.scene.image.Image;
+import java.util.logging.Level;
+
+import javafx.scene.Scene;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
-
-import java.util.logging.Level;
-
-import javafx.scene.Scene;
+import valhalla.core.Balder;
+import valhalla.core.Entity;
+import valhalla.core.Frigg;
 
 /**
  * Freja is the graphics engine for Valhalla.
  * It is responsible for rendering the game.
  */
-
 public class Freja {
     StackPane root;
-    public SpriteAnimation spriteAnimation; // Lägg till SpriteAnimation
+    public SpriteAnimationSystem spriteAnimationSystem;
 
     public void init(StackPane root) {
         Balder.setLevel(Level.INFO);
@@ -27,28 +26,35 @@ public class Freja {
         this.root = root;
         this.root.setBackground(new Background(new BackgroundFill(Color.PINK, null, null)));
 
-        // Ladda spritesheet
-        Image spriteSheet = new Image(getClass().getResourceAsStream("/prtg_roll_spritesheet.png"));
-        spriteAnimation = new SpriteAnimation(spriteSheet, 32, 32, 12); // Anta att varje ram är 64x64 och det finns 12
+        this.spriteAnimationSystem = new SpriteAnimationSystem();
 
-        // Lägg till ImageView till root
-        this.root.getChildren().add(spriteAnimation.getImageView());
-        spriteAnimation.start(); // Starta animationen
-
-        // Registrera en tangenttryckningslyssnare
         Scene scene = root.getScene();
         Frigg.handleSceneInput(scene);
 
         Balder.Log.info("Freja initialized");
     }
+    
+    public void addEntity(Entity p_entity) {
+        try {
+            this.spriteAnimationSystem.addSpriteAnimation(p_entity.getData(SpriteAnimationData.class));
+        } catch (Exception e) {
+            Balder.Log.warning("Entity does not have a SpriteAnimationData component");
+        }
+    }
 
     public void render(long now, long lastUpdate) {
         this.root.getChildren().clear();
-        this.root.getChildren().add(spriteAnimation.getImageView()); // Rendera spriten
+        this.spriteAnimationSystem.update();
+
+        for (SpriteAnimationData animation : this.spriteAnimationSystem.animations) {   
+            this.root.getChildren().add(animation.sprite.imageView); // Rendera spriten
+        }
 
         // Calculate FPS
         double fps = 1_000_000_000.0 / (now - lastUpdate);
         Text fpsText = new Text(String.format("FPS: %.2f", fps));
+        fpsText.setTranslateX(200);
+        fpsText.setTranslateY(200);
         this.root.getChildren().add(fpsText);
     }
 }

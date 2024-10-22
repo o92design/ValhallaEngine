@@ -1,13 +1,15 @@
 package valhalla.core;
 
-import valhalla.graphics.Freja;
-
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import valhalla.game.Player;
+import valhalla.graphics.Freja;
+import valhalla.graphics.SpriteAnimationData;
 
 /**
  * Oden is the core engine for Valhalla.
@@ -16,6 +18,15 @@ import javafx.stage.Stage;
 public class Oden extends Application {
     private AnimationTimer gameLoop;
     private Freja freja;
+
+    private final double maxSpeed = 10; // Max hastighet i pixlar per sekund
+    private final double acceleration = 0.5; // Acceleration i pixlar per sekund^2
+    private final double deceleration = 0.5; // Deceleration i pixlar per sekund^2
+    private double currentSpeedX = 0; // Aktuell hastighet i X-led
+    private double currentSpeedY = 0; // Aktuell hastighet i Y-ledr
+
+    public Player player = new Player();
+    public Player player2 = new Player();
 
     public Oden() {
     }
@@ -42,6 +53,8 @@ public class Oden extends Application {
 
         // Initiera Freja och rendera
         freja.init(root);
+        freja.addEntity(player);
+        freja.addEntity(player2);
 
         // Skapa gameloop
         gameLoop = new AnimationTimer() {
@@ -51,7 +64,7 @@ public class Oden extends Application {
 
             @Override
             public void handle(long now) {
-                updateGame();
+                updateGame(now);
                 if (now - lastUpdate >= FRAME_INTERVAL) {
                     freja.render(now, lastUpdate); // Rendera med Freja
                     lastUpdate = now;
@@ -64,23 +77,40 @@ public class Oden extends Application {
         primaryStage.show();
     }
 
-    private void updateGame() {
+    private void updateGame(long deltaTime) {
+        SpriteAnimationData spriteAnimationComponent = player.getData(SpriteAnimationData.class);
+        ImageView playerSprite = spriteAnimationComponent.sprite.imageView;
+
         // Flytta bilden baserat på tangenttryckningar
         if (Frigg.isKeyDown(KeyCode.W)) { // Flytta upp
-            freja.spriteAnimation.getImageView()
-                    .setTranslateY(freja.spriteAnimation.getImageView().getTranslateY() - 5);
+            currentSpeedY = Math.max(currentSpeedY - acceleration * deltaTime, -maxSpeed);
+            playerSprite.setTranslateY(playerSprite.getTranslateY() + currentSpeedY);
         }
         if (Frigg.isKeyDown(KeyCode.S)) { // Flytta ner
-            freja.spriteAnimation.getImageView()
-                    .setTranslateY(freja.spriteAnimation.getImageView().getTranslateY() + 5);
+            currentSpeedY = Math.min(currentSpeedY + acceleration * deltaTime, +maxSpeed);
+            playerSprite.setTranslateY(playerSprite.getTranslateY() + currentSpeedY);
         }
         if (Frigg.isKeyDown(KeyCode.A)) { // Flytta vänster
-            freja.spriteAnimation.getImageView()
-                    .setTranslateX(freja.spriteAnimation.getImageView().getTranslateX() - 5);
+            currentSpeedX = Math.max(currentSpeedX - acceleration * deltaTime, -maxSpeed);
+            playerSprite.setTranslateX(playerSprite.getTranslateX() + currentSpeedX);
+            // Ändra animation till vänster
         }
+        
         if (Frigg.isKeyDown(KeyCode.D)) { // Flytta höger
-            freja.spriteAnimation.getImageView()
-                    .setTranslateX(freja.spriteAnimation.getImageView().getTranslateX() + 5);
+            currentSpeedX = Math.min(currentSpeedX + acceleration * deltaTime, maxSpeed);
+            playerSprite.setTranslateX(playerSprite.getTranslateX() + currentSpeedX);
+            // Ändra animation till höger
+        }
+        if (currentSpeedX > 0) {
+            currentSpeedX = Math.max(currentSpeedX - deceleration * deltaTime, 0);
+        } else if (currentSpeedX < 0) {
+            currentSpeedX = Math.min(currentSpeedX + deceleration * deltaTime, 0);
+        }
+
+        if (currentSpeedY > 0) {
+            currentSpeedY = Math.max(currentSpeedY - deceleration * deltaTime, 0);
+        } else if (currentSpeedY < 0) {
+            currentSpeedY = Math.min(currentSpeedY + deceleration * deltaTime, 0);
         }
     }
 }
