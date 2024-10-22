@@ -43,6 +43,7 @@ public final class Balder {
      * Sets the logging level for all handlers.
      *
      * @param level the logging level to set
+     * @todo 18-10-24: KiOskars - Fix so that this works setting level from the different classes
      */
     public static void setLevel(Level level) {
         for (Handler handler : Log.getHandlers()) {
