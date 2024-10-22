@@ -19,23 +19,34 @@ public class Oden extends Application {
     private AnimationTimer gameLoop;
     private Freja freja;
 
-    private final double maxSpeed = 10; // Max hastighet i pixlar per sekund
-    private final double acceleration = 0.5; // Acceleration i pixlar per sekund^2
-    private final double deceleration = 0.5; // Deceleration i pixlar per sekund^2
-    private double currentSpeedX = 0; // Aktuell hastighet i X-led
-    private double currentSpeedY = 0; // Aktuell hastighet i Y-ledr
+    private final double maxSpeed = 10; // Maximum speed in pixels per second
+    private final double acceleration = 0.5; // Acceleration in pixels per second^2
+    private final double deceleration = 0.5; // Deceleration in pixels per second^2
+    private double currentSpeedX = 0; // Current speed in the X direction
+    private double currentSpeedY = 0; // Current speed in the Y direction
 
     public Player player = new Player();
     public Player player2 = new Player();
 
+    /**
+     * Constructor for Oden.
+     */
     public Oden() {
     }
 
+    /**
+     * Initializes the game state.
+     */
     public void initialize() {
-        // Initiera spelets tillstånd här
         freja = new Freja();
     }
 
+    /**
+     * Runs the Oden application.
+     *
+     * @param appClass the class of the application
+     * @param args     command line arguments
+     */
     public static void run(Class<Oden> appClass, String[] args) {
         Balder.Log.info("Running Oden");
         launch(args);
@@ -51,12 +62,12 @@ public class Oden extends Application {
         StackPane root = new StackPane();
         primaryStage.setScene(new Scene(root));
 
-        // Initiera Freja och rendera
+        // Initialize Freja and render
         freja.init(root);
         freja.addEntity(player);
         freja.addEntity(player2);
 
-        // Skapa gameloop
+        // Create game loop
         gameLoop = new AnimationTimer() {
             private static final long ONE_SECOND_IN_NANOSECONDS = 1_000_000_000L;
             private static final double FRAME_INTERVAL = ONE_SECOND_IN_NANOSECONDS / 70;
@@ -66,7 +77,7 @@ public class Oden extends Application {
             public void handle(long now) {
                 updateGame(now);
                 if (now - lastUpdate >= FRAME_INTERVAL) {
-                    freja.render(now, lastUpdate); // Rendera med Freja
+                    freja.render(now, lastUpdate); // Render with Freja
                     lastUpdate = now;
                 }
             }
@@ -77,29 +88,34 @@ public class Oden extends Application {
         primaryStage.show();
     }
 
+    /**
+     * Updates the game state based on the time elapsed.
+     *
+     * @param deltaTime the time elapsed since the last update
+     */
     private void updateGame(long deltaTime) {
         SpriteAnimationData spriteAnimationComponent = player.getData(SpriteAnimationData.class);
         ImageView playerSprite = spriteAnimationComponent.sprite.imageView;
 
-        // Flytta bilden baserat på tangenttryckningar
-        if (Frigg.isKeyDown(KeyCode.W)) { // Flytta upp
+        // Move the image based on key presses
+        if (Frigg.isKeyDown(KeyCode.W)) { // Move up
             currentSpeedY = Math.max(currentSpeedY - acceleration * deltaTime, -maxSpeed);
             playerSprite.setTranslateY(playerSprite.getTranslateY() + currentSpeedY);
         }
-        if (Frigg.isKeyDown(KeyCode.S)) { // Flytta ner
+        if (Frigg.isKeyDown(KeyCode.S)) { // Move down
             currentSpeedY = Math.min(currentSpeedY + acceleration * deltaTime, +maxSpeed);
             playerSprite.setTranslateY(playerSprite.getTranslateY() + currentSpeedY);
         }
-        if (Frigg.isKeyDown(KeyCode.A)) { // Flytta vänster
+        if (Frigg.isKeyDown(KeyCode.A)) { // Move left
             currentSpeedX = Math.max(currentSpeedX - acceleration * deltaTime, -maxSpeed);
             playerSprite.setTranslateX(playerSprite.getTranslateX() + currentSpeedX);
-            // Ändra animation till vänster
+            // Change animation to left
         }
-        
-        if (Frigg.isKeyDown(KeyCode.D)) { // Flytta höger
+
+        if (Frigg.isKeyDown(KeyCode.D)) { // Move right
             currentSpeedX = Math.min(currentSpeedX + acceleration * deltaTime, maxSpeed);
             playerSprite.setTranslateX(playerSprite.getTranslateX() + currentSpeedX);
-            // Ändra animation till höger
+            // Change animation to right
         }
         if (currentSpeedX > 0) {
             currentSpeedX = Math.max(currentSpeedX - deceleration * deltaTime, 0);

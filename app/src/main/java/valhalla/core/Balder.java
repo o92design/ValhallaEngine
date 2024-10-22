@@ -3,9 +3,9 @@ package valhalla.core;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
+import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
-import java.util.logging.LogRecord;
 
 /**
  * Balder is the logger for Valhalla.
@@ -15,13 +15,13 @@ public final class Balder {
     public static final Logger Log = Logger.getLogger(Balder.class.getName());
 
     static {
-        // Ta bort standard logghanterare
+        // Remove default log handlers
         Logger rootLogger = Logger.getLogger("");
         for (Handler handler : rootLogger.getHandlers()) {
             rootLogger.removeHandler(handler);
         }
 
-        // Anpassad formatterare för loggmeddelanden
+        // Custom formatter for log messages
         ConsoleHandler handler = new ConsoleHandler();
         handler.setFormatter(new SimpleFormatter() {
             @Override
@@ -39,7 +39,11 @@ public final class Balder {
         Log.setLevel(Level.ALL);
     }
 
-    // TODO(18-10-24: KiOskars) - Fixa så att detta fungerar för de olika klasserna
+    /**
+     * Sets the logging level for all handlers.
+     *
+     * @param level the logging level to set
+     */
     public static void setLevel(Level level) {
         for (Handler handler : Log.getHandlers()) {
             handler.setLevel(level);
@@ -49,6 +53,9 @@ public final class Balder {
 
     public static Balder Instance;
 
+    /**
+     * Constructor for Balder.
+     */
     public Balder() {
         Instance = this;
     }

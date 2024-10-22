@@ -20,6 +20,11 @@ public class Freja {
     StackPane root;
     public SpriteAnimationSystem spriteAnimationSystem;
 
+    /**
+     * Initializes the Freja graphics engine.
+     *
+     * @param root the root pane for rendering
+     */
     public void init(StackPane root) {
         Balder.setLevel(Level.INFO);
         Balder.Log.info("Initializing Freja");
@@ -33,7 +38,12 @@ public class Freja {
 
         Balder.Log.info("Freja initialized");
     }
-    
+
+    /**
+     * Adds an entity to the Freja graphics engine.
+     *
+     * @param p_entity the entity to add
+     */
     public void addEntity(Entity p_entity) {
         try {
             this.spriteAnimationSystem.addSpriteAnimation(p_entity.getData(SpriteAnimationData.class));
@@ -42,12 +52,18 @@ public class Freja {
         }
     }
 
+    /**
+     * Renders the current frame of the game.
+     *
+     * @param now        the current time in nanoseconds
+     * @param lastUpdate the last update time in nanoseconds
+     */
     public void render(long now, long lastUpdate) {
         this.root.getChildren().clear();
         this.spriteAnimationSystem.update();
 
-        for (SpriteAnimationData animation : this.spriteAnimationSystem.animations) {   
-            this.root.getChildren().add(animation.sprite.imageView); // Rendera spriten
+        for (SpriteAnimationData animation : this.spriteAnimationSystem.animations) {
+            this.root.getChildren().add(animation.sprite.imageView); // Render the sprite
         }
 
         // Calculate FPS
