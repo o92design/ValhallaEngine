@@ -19,6 +19,7 @@ Valhalla is a game engine designed for creating 2D games in Java. It provides a 
   - [Balder](#balder)
   - [IData](#idata)
   - [ISystem](#isystem)
+  - [PhysicsSystem](#physicssystem)
 - [License](#license)
 
 ## Features
@@ -27,6 +28,7 @@ Valhalla is a game engine designed for creating 2D games in Java. It provides a 
 - **Input Handling**: Manages keyboard and mouse input.
 - **Entity Management**: Supports game entities with various data components.
 - **Animation System**: Handles sprite animations with frame management.
+- **Physics System**: Handles physics calculations for entities.
 
 ## Getting Started
 
@@ -125,6 +127,16 @@ An interface for data components that can be associated with entities.
 ### ISystem
 
 An interface for systems that can update their state.
+
+### PhysicsSystem
+
+The `PhysicsSystem` is responsible for managing and updating physics-related data for entities.
+
+- **Methods**:
+  - `addEntity(Entity entity)`: Adds an entity to the physics system.
+  - `update(long deltaTime)`: Updates the physics for all entities, including position updates based on velocity.
+
+#### Example Code:
 
 ## License
 

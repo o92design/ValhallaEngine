@@ -10,6 +10,9 @@ import javafx.stage.Stage;
 import valhalla.game.Player;
 import valhalla.graphics.Freja;
 import valhalla.graphics.SpriteAnimationData;
+import valhalla.physics.PhysicsData;
+import valhalla.physics.PhysicsSystem;
+import valhalla.physics.TransformData;
 
 /**
  * Oden is the core engine for Valhalla.
@@ -18,12 +21,11 @@ import valhalla.graphics.SpriteAnimationData;
 public class Oden extends Application {
     private AnimationTimer gameLoop;
     private Freja freja;
+    private PhysicsSystem physicsSystem;
 
-    private final double maxSpeed = 10; // Maximum speed in pixels per second
-    private final double acceleration = 0.5; // Acceleration in pixels per second^2
-    private final double deceleration = 0.5; // Deceleration in pixels per second^2
-    private double currentSpeedX = 0; // Current speed in the X direction
-    private double currentSpeedY = 0; // Current speed in the Y direction
+    private final float maxSpeed = 5f; // Maximum speed in pixels per second
+    private final float acceleration = 1.5f; // Acceleration in pixels per second^2
+    private final float deceleration = 1.0f; // Deceleration in pixels per second^2
 
     public Player player = new Player();
     public Player player2 = new Player();
@@ -67,6 +69,15 @@ public class Oden extends Application {
         freja.addEntity(player);
         freja.addEntity(player2);
 
+        physicsSystem = new PhysicsSystem();
+        physicsSystem.addEntity(player);
+        physicsSystem.addEntity(player2);
+
+        player.getData(PhysicsData.class).acceleration = acceleration;
+        player.getData(PhysicsData.class).deceleration = deceleration;
+        player2.getData(PhysicsData.class).acceleration = acceleration;
+        player2.getData(PhysicsData.class).deceleration = deceleration;
+
         // Create game loop
         gameLoop = new AnimationTimer() {
             private static final long ONE_SECOND_IN_NANOSECONDS = 1_000_000_000L;
@@ -75,6 +86,7 @@ public class Oden extends Application {
 
             @Override
             public void handle(long now) {
+                handleInput(now);
                 updateGame(now);
                 if (now - lastUpdate >= FRAME_INTERVAL) {
                     freja.render(now, lastUpdate); // Render with Freja
@@ -96,37 +108,29 @@ public class Oden extends Application {
     private void updateGame(long deltaTime) {
         SpriteAnimationData spriteAnimationComponent = player.getData(SpriteAnimationData.class);
         ImageView playerSprite = spriteAnimationComponent.sprite.imageView;
+        
+        physicsSystem.update(deltaTime);
 
+        playerSprite.setTranslateX(player.getData(TransformData.class).x);
+        playerSprite.setTranslateY(player.getData(TransformData.class).y);
+    }
+    
+    public void handleInput(long deltaTime) {
         // Move the image based on key presses
         if (Frigg.isKeyDown(KeyCode.W)) { // Move up
-            currentSpeedY = Math.max(currentSpeedY - acceleration * deltaTime, -maxSpeed);
-            playerSprite.setTranslateY(playerSprite.getTranslateY() + currentSpeedY);
+            player.getData(PhysicsData.class).velocityY = (float) Math.max(player.getData(PhysicsData.class).velocityY - player.getData(PhysicsData.class).acceleration, -maxSpeed);
         }
         if (Frigg.isKeyDown(KeyCode.S)) { // Move down
-            currentSpeedY = Math.min(currentSpeedY + acceleration * deltaTime, +maxSpeed);
-            playerSprite.setTranslateY(playerSprite.getTranslateY() + currentSpeedY);
+            player.getData(PhysicsData.class).velocityY = (float) Math.min(player.getData(PhysicsData.class).velocityY + player.getData(PhysicsData.class).acceleration, +maxSpeed);
         }
         if (Frigg.isKeyDown(KeyCode.A)) { // Move left
-            currentSpeedX = Math.max(currentSpeedX - acceleration * deltaTime, -maxSpeed);
-            playerSprite.setTranslateX(playerSprite.getTranslateX() + currentSpeedX);
+            player.getData(PhysicsData.class).velocityX = (float) Math.max(player.getData(PhysicsData.class).velocityX - player.getData(PhysicsData.class).acceleration, -maxSpeed);
             // Change animation to left
         }
 
         if (Frigg.isKeyDown(KeyCode.D)) { // Move right
-            currentSpeedX = Math.min(currentSpeedX + acceleration * deltaTime, maxSpeed);
-            playerSprite.setTranslateX(playerSprite.getTranslateX() + currentSpeedX);
+            player.getData(PhysicsData.class).velocityX = (float) Math.min(player.getData(PhysicsData.class).velocityX + player.getData(PhysicsData.class).acceleration, maxSpeed);
             // Change animation to right
-        }
-        if (currentSpeedX > 0) {
-            currentSpeedX = Math.max(currentSpeedX - deceleration * deltaTime, 0);
-        } else if (currentSpeedX < 0) {
-            currentSpeedX = Math.min(currentSpeedX + deceleration * deltaTime, 0);
-        }
-
-        if (currentSpeedY > 0) {
-            currentSpeedY = Math.max(currentSpeedY - deceleration * deltaTime, 0);
-        } else if (currentSpeedY < 0) {
-            currentSpeedY = Math.min(currentSpeedY + deceleration * deltaTime, 0);
         }
     }
 }
