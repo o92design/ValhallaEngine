@@ -3,6 +3,7 @@ package valhalla.physics;
 import java.util.ArrayList;
 import java.util.List;
 
+import valhalla.core.Balder;
 import valhalla.core.Entity;
 
 /**
@@ -36,21 +37,32 @@ public class PhysicsSystem {
             PhysicsData physicsData = entity.getData(PhysicsData.class);
             TransformData transformData = entity.getData(TransformData.class);
             if (physicsData != null) {
-                // Update position based on velocity and deltaTime
+
+                if (physicsData.acceleration > 0) {
+                    if(physicsData.velocityY + physicsData.acceleration < 5f) {
+                        physicsData.velocityY = physicsData.velocityY + physicsData.acceleration < 5f ? physicsData.velocityY + physicsData.acceleration : 5f;
+                    }
+                } else {
+                    if (physicsData.velocityY + physicsData.acceleration > -5f) {
+                        physicsData.velocityY = physicsData.velocityY + physicsData.acceleration > -5f
+                                ? physicsData.velocityY + physicsData.acceleration
+                                : -5f;
+                    }
+                }
+                
+                if ((physicsData.acceleration > -0.3f && physicsData.acceleration < 0.3f) && physicsData.velocityY != 0) {
+                    if (physicsData.velocityY > 0) {
+                        physicsData.velocityY = Math.clamp(0 , physicsData.velocityY, physicsData.velocityY);
+                    } else {
+                        physicsData.velocityY = Math.clamp(physicsData.velocityY, 0, 0f);
+                    }
+                }
+
                 transformData.x += physicsData.velocityX;
                 transformData.y += physicsData.velocityY;
 
-                if (physicsData.velocityX > 0) {
-                    physicsData.velocityX = (float) Math.max(physicsData.velocityX - physicsData.deceleration, 0);
-                } else if (physicsData.velocityX < 0) {
-                    physicsData.velocityX = (float) Math.min(physicsData.velocityX + physicsData.deceleration, 0);
-                }
-
-                if (physicsData.velocityY > 0) {
-                    physicsData.velocityY = (float) Math.max(physicsData.velocityY - physicsData.deceleration, 0);
-                } else if (physicsData.velocityY < 0) {
-                    physicsData.velocityY = (float) Math.min(physicsData.velocityY + physicsData.deceleration, 0);
-                }
+                //Balder.Log.info(String.format("Velocity: %f", physicsData.velocityY));
+                Balder.Log.info(String.format("Acceleration: %f", physicsData.acceleration));
 
                 // TODO: Add collision detection and response
             }

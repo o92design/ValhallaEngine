@@ -11,6 +11,8 @@ Valhalla is a game engine designed for creating 2D games in Java. It provides a 
   - [Oden](#oden)
   - [Freja](#freja)
   - [Entity](#entity)
+  - [GameData](#gamedata)
+  - [SteamshipGame](#steamshipgame)
   - [Player](#player)
   - [SpriteData](#spritedata)
   - [SpriteAnimationData](#spriteanimationdata)
@@ -57,6 +59,7 @@ The core engine for Valhalla, responsible for initializing the game and managing
   - `initialize()`: Initializes the game state.
   - `start(Stage primaryStage)`: Starts the application and sets up the game loop.
   - `updateGame(long deltaTime)`: Updates the game state based on the time elapsed.
+  - `handleInput(long deltaTime, Entity entity)`: Handles input for the entities.
 
 ### Freja
 
@@ -74,6 +77,20 @@ Represents a game entity that can hold various data components.
 - **Methods**:
   - `addData(T p_component)`: Adds a data component to the entity.
   - `getData(Class<T> p_dataType)`: Retrieves a data component of the specified type.
+
+### GameData
+
+Holds the metadata and entities for a game, including the game's name, version, author, and description.
+
+- **Methods**:
+  - `addEntity(Entity entity)`: Adds an entity to the game.
+  - `removeEntity(Class<? extends Entity> entityClass)`: Removes an entity from the game based on its class.
+
+### SteamshipGame
+
+Extends the `GameData` class and initializes the game data for the Steamship game. It sets the game's name, version, author, and description, and adds a Ship entity to the game.
+
+- **Constructor**: Initializes the game data with specific values and adds a Ship entity.
 
 ### Player
 

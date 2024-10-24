@@ -29,4 +29,11 @@ public class PhysicsData implements IData<PhysicsData> {
      * The deceleration of the entity.
      */
     public float deceleration;
+
+    public PhysicsData(float p_velocityX, float p_velocityY, float p_acceleration, float p_deceleration) {
+        this.velocityX = p_velocityX;
+        this.velocityY = p_velocityY;
+        this.acceleration = p_acceleration;
+        this.deceleration = p_deceleration;
+    }
 }
