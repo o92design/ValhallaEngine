@@ -17,4 +17,9 @@ public class TransformData implements IData<TransformData> {
      * The y-coordinate of the entity.
      */
     public float y;
+
+    public TransformData(float p_x, float p_y) {
+        this.x = p_x;
+        this.y = p_y;
+    }
 }

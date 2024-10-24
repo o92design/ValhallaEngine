@@ -7,7 +7,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import valhalla.game.Player;
+import valhalla.game.GameData;
 import valhalla.graphics.Freja;
 import valhalla.graphics.SpriteAnimationData;
 import valhalla.physics.PhysicsData;
@@ -20,15 +20,9 @@ import valhalla.physics.TransformData;
  */
 public class Oden extends Application {
     private AnimationTimer gameLoop;
-    private Freja freja;
-    private PhysicsSystem physicsSystem;
-
-    private final float maxSpeed = 5f; // Maximum speed in pixels per second
-    private final float acceleration = 1.5f; // Acceleration in pixels per second^2
-    private final float deceleration = 1.0f; // Deceleration in pixels per second^2
-
-    public Player player = new Player();
-    public Player player2 = new Player();
+    private static Freja freja;
+    private static PhysicsSystem physicsSystem;
+    private static GameData gameData;
 
     /**
      * Constructor for Oden.
@@ -39,8 +33,10 @@ public class Oden extends Application {
     /**
      * Initializes the game state.
      */
-    public void initialize() {
+    public static void initialize(GameData gameData) {
         freja = new Freja();
+        physicsSystem = new PhysicsSystem();
+        Oden.gameData = gameData;
     }
 
     /**
@@ -56,8 +52,7 @@ public class Oden extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        initialize();
-        primaryStage.setTitle("Valhalla");
+        primaryStage.setTitle(gameData.getGameName());
         primaryStage.setWidth(800);
         primaryStage.setHeight(600);
 
@@ -66,17 +61,13 @@ public class Oden extends Application {
 
         // Initialize Freja and render
         freja.init(root);
-        freja.addEntity(player);
-        freja.addEntity(player2);
+        for (Entity entity : gameData.entities) {
+            freja.addEntity(entity);
+        }
 
-        physicsSystem = new PhysicsSystem();
-        physicsSystem.addEntity(player);
-        physicsSystem.addEntity(player2);
-
-        player.getData(PhysicsData.class).acceleration = acceleration;
-        player.getData(PhysicsData.class).deceleration = deceleration;
-        player2.getData(PhysicsData.class).acceleration = acceleration;
-        player2.getData(PhysicsData.class).deceleration = deceleration;
+        for (Entity entity : gameData.entities) {
+            physicsSystem.addEntity(entity);
+        }
 
         // Create game loop
         gameLoop = new AnimationTimer() {
@@ -86,7 +77,9 @@ public class Oden extends Application {
 
             @Override
             public void handle(long now) {
-                handleInput(now);
+                for (Entity entity : gameData.entities) {
+                    handleInput(now, entity);
+                }
                 updateGame(now);
                 if (now - lastUpdate >= FRAME_INTERVAL) {
                     freja.render(now, lastUpdate); // Render with Freja
@@ -106,31 +99,27 @@ public class Oden extends Application {
      * @param deltaTime the time elapsed since the last update
      */
     private void updateGame(long deltaTime) {
-        SpriteAnimationData spriteAnimationComponent = player.getData(SpriteAnimationData.class);
-        ImageView playerSprite = spriteAnimationComponent.sprite.imageView;
-        
-        physicsSystem.update(deltaTime);
+        for (Entity entity : gameData.entities) {
+            SpriteAnimationData spriteAnimationComponent = entity.getData(SpriteAnimationData.class);
+            ImageView playerSprite = spriteAnimationComponent.sprite.imageView;
+            
+            physicsSystem.update(deltaTime);
 
-        playerSprite.setTranslateX(player.getData(TransformData.class).x);
-        playerSprite.setTranslateY(player.getData(TransformData.class).y);
+            playerSprite.setTranslateX(entity.getData(TransformData.class).x);
+            playerSprite.setTranslateY(entity.getData(TransformData.class).y);
+        }
     }
     
-    public void handleInput(long deltaTime) {
+    public void handleInput(long deltaTime, Entity entity) {
         // Move the image based on key presses
-        if (Frigg.isKeyDown(KeyCode.W)) { // Move up
-            player.getData(PhysicsData.class).velocityY = (float) Math.max(player.getData(PhysicsData.class).velocityY - player.getData(PhysicsData.class).acceleration, -maxSpeed);
-        }
-        if (Frigg.isKeyDown(KeyCode.S)) { // Move down
-            player.getData(PhysicsData.class).velocityY = (float) Math.min(player.getData(PhysicsData.class).velocityY + player.getData(PhysicsData.class).acceleration, +maxSpeed);
-        }
-        if (Frigg.isKeyDown(KeyCode.A)) { // Move left
-            player.getData(PhysicsData.class).velocityX = (float) Math.max(player.getData(PhysicsData.class).velocityX - player.getData(PhysicsData.class).acceleration, -maxSpeed);
-            // Change animation to left
-        }
+        PhysicsData physicsData = entity.getData(PhysicsData.class);
 
-        if (Frigg.isKeyDown(KeyCode.D)) { // Move right
-            player.getData(PhysicsData.class).velocityX = (float) Math.min(player.getData(PhysicsData.class).velocityX + player.getData(PhysicsData.class).acceleration, maxSpeed);
-            // Change animation to right
+        if (Frigg.isKeyDown(KeyCode.W)) {
+            physicsData.acceleration = physicsData.acceleration - 0.1f > 1f ? physicsData.acceleration - 0.1f : -1f;
+        }
+        
+        if(Frigg.isKeyDown(KeyCode.S)) {
+            physicsData.acceleration = physicsData.acceleration + 0.1f < 1f ? physicsData.acceleration + 0.1f : 1f;
         }
     }
 }
