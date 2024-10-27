@@ -9,7 +9,7 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import valhalla.game.GameData;
 import valhalla.graphics.Freja;
-import valhalla.graphics.SpriteAnimationData;
+import valhalla.graphics.SpriteData;
 import valhalla.physics.PhysicsData;
 import valhalla.physics.PhysicsSystem;
 import valhalla.physics.TransformData;
@@ -100,8 +100,7 @@ public class Oden extends Application {
      */
     private void updateGame(long deltaTime) {
         for (Entity entity : gameData.entities) {
-            SpriteAnimationData spriteAnimationComponent = entity.getData(SpriteAnimationData.class);
-            ImageView playerSprite = spriteAnimationComponent.sprite.imageView;
+            ImageView playerSprite = entity.getData(SpriteData.class).imageView;
             
             physicsSystem.update(deltaTime);
 
