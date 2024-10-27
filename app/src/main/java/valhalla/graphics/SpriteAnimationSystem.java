@@ -15,6 +15,10 @@ public class SpriteAnimationSystem implements ISystem {
      * @param p_animationComponent the sprite animation component to add
      */
     public void addSpriteAnimation(SpriteAnimationData p_animationComponent) {
+        if (p_animationComponent == null) {
+            return;
+        }
+
         this.animations.add(p_animationComponent);
     }
 

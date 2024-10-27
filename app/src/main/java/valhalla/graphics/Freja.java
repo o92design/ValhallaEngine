@@ -1,5 +1,6 @@
 package valhalla.graphics;
 
+import java.util.ArrayList;
 import java.util.logging.Level;
 
 import javafx.scene.Scene;
@@ -19,6 +20,7 @@ import valhalla.core.Frigg;
 public class Freja {
     StackPane root;
     public SpriteAnimationSystem spriteAnimationSystem;
+    public ArrayList<SpriteData> spriteData;
 
     /**
      * Initializes the Freja graphics engine.
@@ -32,6 +34,7 @@ public class Freja {
         this.root.setBackground(new Background(new BackgroundFill(Color.PINK, null, null)));
 
         this.spriteAnimationSystem = new SpriteAnimationSystem();
+        this.spriteData = new ArrayList<>();
 
         Scene scene = root.getScene();
         Frigg.handleSceneInput(scene);
@@ -50,6 +53,14 @@ public class Freja {
         } catch (Exception e) {
             Balder.Log.warning("Entity does not have a SpriteAnimationData component");
         }
+
+        try {
+            if (p_entity.getData(SpriteData.class) != null) {
+                this.spriteData.add(p_entity.getData(SpriteData.class));
+            }
+        } catch (Exception e) {
+            Balder.Log.warning("Entity does not have a SpriteData component");
+        }
     }
 
     /**
@@ -64,6 +75,10 @@ public class Freja {
 
         for (SpriteAnimationData animation : this.spriteAnimationSystem.animations) {
             this.root.getChildren().add(animation.sprite.imageView); // Render the sprite
+        }
+
+        for (SpriteData sprite : this.spriteData) {
+            this.root.getChildren().add(sprite.imageView); // Render the sprite
         }
 
         // Calculate FPS

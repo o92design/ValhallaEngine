@@ -13,6 +13,7 @@ public class SpriteData implements IData<SpriteData> {
 
     public int frameWidth;
     public int frameHeight;
+    public float scale;
 
     /**
      * Constructor for SpriteData.
@@ -21,11 +22,17 @@ public class SpriteData implements IData<SpriteData> {
      * @param p_frameWidth  the width of each frame
      * @param p_frameHeight the height of each frame
      */
-    public SpriteData(Image p_spriteSheet, int p_frameWidth, int p_frameHeight) {
+    public SpriteData(Image p_spriteSheet, int p_frameWidth, int p_frameHeight, float p_scale) {
         this.spriteSheet = p_spriteSheet;
         this.frameWidth = p_frameWidth;
         this.frameHeight = p_frameHeight;
-
+        this.scale = p_scale;
+        
         this.imageView = new ImageView(this.spriteSheet);
+        this.imageView.setFitWidth(p_frameWidth);
+        this.imageView.setFitHeight(p_frameHeight);
+
+        this.imageView.setScaleX(p_scale);
+        this.imageView.setScaleY(p_scale);
     }
 }

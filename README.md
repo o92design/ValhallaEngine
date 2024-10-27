@@ -23,6 +23,8 @@ Valhalla is a game engine designed for creating 2D games in Java. It provides a 
   - [ISystem](#isystem)
   - [PhysicsSystem](#physicssystem)
 - [License](#license)
+- [Creative Commons Attribution](#creative-commons-attribution)
+  - [Specific Creative Commons Attribution](#specific-creative-commons-attribution)
 
 ## Features
 
@@ -158,3 +160,13 @@ The `PhysicsSystem` is responsible for managing and updating physics-related dat
 ## License
 
 This project is licensed under the Apache License 2.0. See the [LICENSE](LICENSE) file for details.
+
+## Creative Commons Attribution
+
+This project may include third-party assets that are licensed under Creative Commons Attribution. Please refer to the specific asset documentation for more details.
+
+## Specific Creative Commons Attribution
+
+### Ship
+
+"ship_bck.png" and "ship_fwd.png" are based on "S/S Norrtelje (1900)" (https://skfb.ly/oIAzT) by SWEDISH NATIONAL MARITIME AND TRANSPORT MUSEUMS, which is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
